@@ -5,7 +5,7 @@ import models
 from routers import categories
 from routers import categories, brands
 from routers import categories, brands, products
-
+from routers import categories, brands, products, auth
 
 
 
@@ -16,6 +16,7 @@ app = FastAPI(title="Clothing Store API")
 app.include_router(categories.router)
 app.include_router(brands.router)
 app.include_router(products.router)
+app.include_router(auth.router)
 
 
 @app.get("/")

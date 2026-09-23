@@ -70,3 +70,16 @@ class ProductOut(BaseModel):
     variants: list[VariantOut] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+class UserOut(BaseModel):
+    id: int
+    full_name: str
+    email: str
+    role: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

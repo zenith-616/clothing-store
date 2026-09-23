@@ -4,12 +4,18 @@ from sqlalchemy.orm import Session
 import models
 import schemas
 from database import get_db
+from security import get_current_user
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
 
-# CREATE: yangi kategoriya qo'shish
-@router.post("/", response_model=schemas.CategoryOut, status_code=201)
+# CREATE
+@router.post(
+    "/",
+    response_model=schemas.CategoryOut,
+    status_code=201,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def create_category(data: schemas.CategoryCreate, db: Session = Depends(get_db)):
     exists = db.query(models.Category).filter(models.Category.name == data.name).first()
     if exists:
@@ -21,13 +27,13 @@ def create_category(data: schemas.CategoryCreate, db: Session = Depends(get_db))
     return category
 
 
-# READ: barcha kategoriyalar ro'yxati
+# READ (ochiq)
 @router.get("/", response_model=list[schemas.CategoryOut])
 def list_categories(db: Session = Depends(get_db)):
     return db.query(models.Category).all()
 
 
-# READ: bitta kategoriya
+# READ (ochiq)
 @router.get("/{category_id}", response_model=schemas.CategoryOut)
 def get_category(category_id: int, db: Session = Depends(get_db)):
     category = db.get(models.Category, category_id)
@@ -36,8 +42,12 @@ def get_category(category_id: int, db: Session = Depends(get_db)):
     return category
 
 
-# UPDATE: kategoriya nomini o'zgartirish
-@router.put("/{category_id}", response_model=schemas.CategoryOut)
+# UPDATE
+@router.put(
+    "/{category_id}",
+    response_model=schemas.CategoryOut,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def update_category(
     category_id: int, data: schemas.CategoryUpdate, db: Session = Depends(get_db)
 ):
@@ -50,8 +60,12 @@ def update_category(
     return category
 
 
-# DELETE: kategoriyani o'chirish
-@router.delete("/{category_id}", status_code=204)
+# DELETE
+@router.delete(
+    "/{category_id}",
+    status_code=204,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def delete_category(category_id: int, db: Session = Depends(get_db)):
     category = db.get(models.Category, category_id)
     if category is None:

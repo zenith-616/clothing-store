@@ -4,11 +4,17 @@ from sqlalchemy.orm import Session
 import models
 import schemas
 from database import get_db
+from security import get_current_user
 
 router = APIRouter(prefix="/brands", tags=["Brands"])
 
 
-@router.post("/", response_model=schemas.BrandOut, status_code=201)
+@router.post(
+    "/",
+    response_model=schemas.BrandOut,
+    status_code=201,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def create_brand(data: schemas.BrandCreate, db: Session = Depends(get_db)):
     exists = db.query(models.Brand).filter(models.Brand.name == data.name).first()
     if exists:
@@ -33,7 +39,11 @@ def get_brand(brand_id: int, db: Session = Depends(get_db)):
     return brand
 
 
-@router.put("/{brand_id}", response_model=schemas.BrandOut)
+@router.put(
+    "/{brand_id}",
+    response_model=schemas.BrandOut,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def update_brand(brand_id: int, data: schemas.BrandUpdate, db: Session = Depends(get_db)):
     brand = db.get(models.Brand, brand_id)
     if brand is None:
@@ -51,7 +61,11 @@ def update_brand(brand_id: int, data: schemas.BrandUpdate, db: Session = Depends
     return brand
 
 
-@router.delete("/{brand_id}", status_code=204)
+@router.delete(
+    "/{brand_id}",
+    status_code=204,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def delete_brand(brand_id: int, db: Session = Depends(get_db)):
     brand = db.get(models.Brand, brand_id)
     if brand is None:

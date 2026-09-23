@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 import models
 import schemas
 from database import get_db
+from security import get_current_user
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -25,7 +26,12 @@ def get_product_or_404(product_id: int, db: Session) -> models.Product:
 
 # ---------- MAHSULOTLAR ----------
 
-@router.post("/", response_model=schemas.ProductOut, status_code=201)
+@router.post(
+    "/",
+    response_model=schemas.ProductOut,
+    status_code=201,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def create_product(data: schemas.ProductCreate, db: Session = Depends(get_db)):
     check_relations(data, db)
     product = models.Product(**data.model_dump())
@@ -37,9 +43,9 @@ def create_product(data: schemas.ProductCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=list[schemas.ProductOut])
 def list_products(
-    q: str | None = None,            # nom bo'yicha qidiruv
-    category_id: int | None = None,  # kategoriya filtri
-    brand_id: int | None = None,     # brend filtri
+    q: str | None = None,
+    category_id: int | None = None,
+    brand_id: int | None = None,
     skip: int = 0,
     limit: int = 20,
     db: Session = Depends(get_db),
@@ -59,7 +65,11 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
     return get_product_or_404(product_id, db)
 
 
-@router.put("/{product_id}", response_model=schemas.ProductOut)
+@router.put(
+    "/{product_id}",
+    response_model=schemas.ProductOut,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def update_product(
     product_id: int, data: schemas.ProductUpdate, db: Session = Depends(get_db)
 ):
@@ -72,7 +82,11 @@ def update_product(
     return product
 
 
-@router.delete("/{product_id}", status_code=204)
+@router.delete(
+    "/{product_id}",
+    status_code=204,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     product = get_product_or_404(product_id, db)
     db.delete(product)
@@ -83,7 +97,10 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
 # ---------- VARIANTLAR ----------
 
 @router.post(
-    "/{product_id}/variants", response_model=schemas.VariantOut, status_code=201
+    "/{product_id}/variants",
+    response_model=schemas.VariantOut,
+    status_code=201,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
 )
 def create_variant(
     product_id: int, data: schemas.VariantCreate, db: Session = Depends(get_db)
@@ -110,7 +127,9 @@ def create_variant(
 
 
 @router.put(
-    "/{product_id}/variants/{variant_id}", response_model=schemas.VariantOut
+    "/{product_id}/variants/{variant_id}",
+    response_model=schemas.VariantOut,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
 )
 def update_variant(
     product_id: int,
@@ -128,7 +147,11 @@ def update_variant(
     return variant
 
 
-@router.delete("/{product_id}/variants/{variant_id}", status_code=204)
+@router.delete(
+    "/{product_id}/variants/{variant_id}",
+    status_code=204,
+    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+)
 def delete_variant(product_id: int, variant_id: int, db: Session = Depends(get_db)):
     variant = db.get(models.ProductVariant, variant_id)
     if variant is None or variant.product_id != product_id:
