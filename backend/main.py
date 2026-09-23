@@ -1,12 +1,14 @@
 from fastapi import FastAPI
 
 from database import engine, Base
-import models  # jadvallar ro'yxatdan o'tishi uchun kerak
+import models
+from routers import categories
 
-# Server ishga tushganda jadvallar yo'q bo'lsa, yaratadi
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Clothing Store API")
+
+app.include_router(categories.router)
 
 
 @app.get("/")
