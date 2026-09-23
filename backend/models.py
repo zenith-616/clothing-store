@@ -36,3 +36,18 @@ class Product(Base):
 
     category = relationship("Category", back_populates="products")
     brand = relationship("Brand", back_populates="products")
+    variants = relationship(
+        "ProductVariant", back_populates="product", cascade="all, delete-orphan"
+    )
+
+class ProductVariant(Base):
+    __tablename__ = "product_variants"
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    size = Column(String(20), nullable=False)    # S, M, L, 42...
+    color = Column(String(50), nullable=False)
+    stock = Column(Integer, default=0, nullable=False)  # ombordagi soni
+    sku = Column(String(50), nullable=True)      # ichki kod (ixtiyoriy)
+
+    product = relationship("Product", back_populates="variants")
