@@ -68,6 +68,7 @@ class ProductOut(BaseModel):
     category: CategoryOut | None
     brand: BrandOut | None
     variants: list[VariantOut] = []
+    total_stock: int = 0  # barcha variantlar yig'indisi (badge uchun)
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -136,3 +137,18 @@ class OrderOut(BaseModel):
     items: list[OrderItemOut] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+class TopProduct(BaseModel):
+    product_id: int
+    name: str
+    sold: int
+
+
+class DashboardOut(BaseModel):
+    today_orders: int
+    today_revenue: float
+    total_orders: int
+    total_revenue: float
+    new_orders: int
+    low_stock_variants: int
+    top_products: list[TopProduct]

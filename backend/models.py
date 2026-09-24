@@ -42,6 +42,9 @@ class Product(Base):
     variants = relationship(
         "ProductVariant", back_populates="product", cascade="all, delete-orphan"
     )
+    @property
+    def total_stock(self) -> int:
+        return sum(v.stock for v in self.variants)
 
 class ProductVariant(Base):
     __tablename__ = "product_variants"
