@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
-
+from datetime import datetime
 
 class CategoryCreate(BaseModel):
     name: str = Field(min_length=1, max_length=100)
@@ -83,3 +83,56 @@ class UserOut(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class CustomerCreate(BaseModel):
+    full_name: str = Field(min_length=1, max_length=100)
+    phone: str = Field(min_length=7, max_length=20)
+    telegram_id: int | None = None
+    address: str | None = None
+
+
+class CustomerOut(BaseModel):
+    id: int
+    full_name: str
+    phone: str
+    telegram_id: int | None
+    address: str | None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class OrderItemCreate(BaseModel):
+    variant_id: int
+    quantity: int = Field(gt=0)
+
+
+class OrderCreate(BaseModel):
+    customer_id: int
+    address: str | None = None
+    items: list[OrderItemCreate] = Field(min_length=1)
+
+
+class OrderStatusUpdate(BaseModel):
+    status: str
+
+
+class OrderItemOut(BaseModel):
+    id: int
+    variant_id: int
+    quantity: int
+    price: float
+    variant: VariantOut
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class OrderOut(BaseModel):
+    id: int
+    status: str
+    total_price: float
+    address: str | None
+    created_at: datetime
+    customer: CustomerOut
+    items: list[OrderItemOut] = []
+
+    model_config = ConfigDict(from_attributes=True)

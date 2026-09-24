@@ -6,6 +6,8 @@ from routers import categories
 from routers import categories, brands
 from routers import categories, brands, products
 from routers import categories, brands, products, auth
+from routers import categories, brands, products, auth, customers, orders
+
 
 
 
@@ -17,6 +19,8 @@ app.include_router(categories.router)
 app.include_router(brands.router)
 app.include_router(products.router)
 app.include_router(auth.router)
+app.include_router(customers.router)
+app.include_router(orders.router)
 
 
 @app.get("/")
