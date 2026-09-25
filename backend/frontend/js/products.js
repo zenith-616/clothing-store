@@ -5,15 +5,15 @@ if (!getToken()) {
 
 function statusBadge(product) {
   if (!product.is_active) {
-    return `<span class="badge bg-secondary">Nofaol</span>`;
+    return `<span class="status status-inactive"><span class="dot"></span>Nofaol</span>`;
   }
   if (product.total_stock === 0) {
-    return `<span class="badge bg-danger">Tugagan</span>`;
+    return `<span class="status status-out"><span class="dot"></span>Tugagan</span>`;
   }
   if (product.total_stock <= 5) {
-    return `<span class="badge bg-warning text-dark">Kam qolgan</span>`;
+    return `<span class="status status-low"><span class="dot"></span>Kam qolgan</span>`;
   }
-  return `<span class="badge bg-success">Sotuvda</span>`;
+  return `<span class="status status-active"><span class="dot"></span>Sotuvda</span>`;
 }
 
 function formatPrice(price) {
@@ -47,7 +47,7 @@ async function loadProducts() {
         <td>${formatPrice(p.price)}</td>
         <td>${statusBadge(p)}</td>
         <td class="text-end">
-          <button class="btn btn-sm btn-outline-primary">Tahrirlash</button>
+          <button class="btn-edit">Tahrirlash</button>
         </td>
       </tr>
     `).join("");

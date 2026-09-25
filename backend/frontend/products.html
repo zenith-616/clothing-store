@@ -8,32 +8,24 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-dark bg-dark navbar-expand-lg mb-4">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="products.html">Kiyim do'koni</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link active" href="products.html">Mahsulotlar</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Buyurtmalar</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Mijozlar</a></li>
-        </ul>
-        <button class="btn btn-outline-light" onclick="logout()">Chiqish</button>
+  <nav class="app-nav">
+    <div class="container-fluid px-4 d-flex align-items-center justify-content-between flex-wrap">
+      <a class="brand-serif" href="products.html">Kiyim do'koni</a>
+      <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <a class="nav-link active" href="products.html">Mahsulotlar</a>
+        <a class="nav-link" href="#">Buyurtmalar</a>
+        <a class="nav-link" href="#">Mijozlar</a>
+        <button class="btn-logout" onclick="logout()">Chiqish</button>
       </div>
     </div>
   </nav>
 
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h4 class="mb-0">Mahsulotlar</h4>
-      <button class="btn btn-primary">+ Mahsulot qo'shish</button>
+  <div class="container my-4">
+    <div class="page-header d-flex justify-content-between align-items-center mb-3">
+      <h4>Mahsulotlar</h4>
+      <button class="btn-gold">+ Mahsulot qo'shish</button>
     </div>
 
-    <!-- QIDIRUV VA FILTR -->
     <div class="row g-2 mb-3">
       <div class="col-12 col-md-5">
         <input type="text" id="searchInput" class="form-control" placeholder="Mahsulot nomi bo'yicha qidirish...">
@@ -44,29 +36,30 @@
         </select>
       </div>
       <div class="col-6 col-md-2">
-        <button class="btn btn-outline-secondary w-100" onclick="loadProducts()">Qidirish</button>
+        <button class="btn btn-outline-dark w-100" onclick="loadProducts()">Qidirish</button>
       </div>
     </div>
 
     <div id="errorBox" class="alert alert-danger d-none"></div>
 
-    <!-- JADVAL -->
-    <div class="table-responsive">
-      <table class="table table-hover align-middle bg-white">
-        <thead class="table-light">
-          <tr>
-            <th>Nomi</th>
-            <th>Kategoriya</th>
-            <th>Brend</th>
-            <th>Narxi</th>
-            <th>Holati</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="productsBody">
-          <tr><td colspan="6" class="text-center text-muted py-4">Yuklanmoqda...</td></tr>
-        </tbody>
-      </table>
+    <div class="data-panel">
+      <div class="table-responsive">
+        <table class="table data-table">
+          <thead>
+            <tr>
+              <th>Nomi</th>
+              <th>Kategoriya</th>
+              <th>Brend</th>
+              <th>Narxi</th>
+              <th>Holati</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="productsBody">
+            <tr><td colspan="6" class="text-center text-muted py-4">Yuklanmoqda...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
