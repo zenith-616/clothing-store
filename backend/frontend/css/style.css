@@ -250,3 +250,46 @@ body {
   border-color: var(--gold);
   color: var(--gold);
 }
+
+/* ---------- MODAL ---------- */
+
+.product-modal {
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+
+.product-modal .modal-header,
+.product-modal .modal-footer {
+  border-color: var(--line);
+}
+
+.product-modal .form-control,
+.product-modal .form-select {
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+.product-modal .form-control:focus,
+.product-modal .form-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(169, 130, 90, 0.15);
+}
+
+.variant-table th {
+  font-size: 0.78rem;
+  color: var(--steel);
+  font-weight: 500;
+}
+
+.variant-table td {
+  padding: 0.4rem;
+}
+
+.btn-remove-variant {
+  border: none;
+  background: transparent;
+  color: var(--rust);
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0 0.4rem;
+}
