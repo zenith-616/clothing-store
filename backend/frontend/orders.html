@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buyurtmalar | Kiyim do'koni</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="app-nav">
+    <div class="container-fluid px-4 d-flex align-items-center justify-content-between flex-wrap">
+      <a class="brand-serif" href="products.html">Kiyim do'koni</a>
+      <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+        <a class="nav-link" href="products.html">Mahsulotlar</a>
+        <a class="nav-link active" href="orders.html">Buyurtmalar</a>
+        <a class="nav-link" href="#">Mijozlar</a>
+        <button class="btn-logout" onclick="logout()">Chiqish</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-4">
+    <div class="page-header d-flex justify-content-between align-items-center mb-3">
+      <h4>Buyurtmalar</h4>
+    </div>
+
+    <div class="row g-2 mb-3">
+      <div class="col-6 col-md-3">
+        <select id="statusFilter" class="form-select" onchange="loadOrders()">
+          <option value="">Barcha statuslar</option>
+          <option value="yangi">Yangi</option>
+          <option value="tasdiqlandi">Tasdiqlandi</option>
+          <option value="tayyorlanmoqda">Tayyorlanmoqda</option>
+          <option value="yetkazilmoqda">Yetkazilmoqda</option>
+          <option value="yetkazildi">Yetkazildi</option>
+          <option value="bekor qilindi">Bekor qilindi</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="errorBox" class="alert alert-danger d-none"></div>
+
+    <div class="data-panel">
+      <div class="table-responsive">
+        <table class="table data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Mijoz</th>
+              <th>Sana</th>
+              <th>Summa</th>
+              <th>Holati</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody">
+            <tr><td colspan="6" class="text-center text-muted py-4">Yuklanmoqda...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUYURTMA TAFSILOTI MODAL -->
+  <div class="modal fade" id="orderModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content product-modal">
+        <div class="modal-header">
+          <h5 class="modal-title brand-serif" id="orderModalTitle">Buyurtma</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="orderModalError" class="alert alert-danger d-none"></div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <div class="text-muted small">Mijoz</div>
+              <div id="oCustomer" class="fw-medium"></div>
+            </div>
+            <div class="col-md-6">
+              <div class="text-muted small">Manzil</div>
+              <div id="oAddress" class="fw-medium"></div>
+            </div>
+          </div>
+
+          <table class="table variant-table mb-3">
+            <thead>
+              <tr>
+                <th>Mahsulot</th>
+                <th>O'lcham / rang</th>
+                <th>Soni</th>
+                <th>Narxi</th>
+              </tr>
+            </thead>
+            <tbody id="orderItemsBody"></tbody>
+          </table>
+
+          <div class="text-end mb-3">
+            <span class="text-muted">Jami: </span>
+            <span id="oTotal" class="fs-5 brand-serif"></span>
+          </div>
+
+          <hr>
+
+          <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0">Statusni o'zgartirish:</label>
+            <select id="statusSelect" class="form-select" style="max-width: 220px;"></select>
+            <button class="btn-gold" id="updateStatusBtn">Yangilash</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/orders.js"></script>
+</body>
+</html>

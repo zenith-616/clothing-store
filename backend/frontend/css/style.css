@@ -293,3 +293,18 @@ body {
   line-height: 1;
   padding: 0 0.4rem;
 }
+
+/* ---------- ORDER STATUS COLORS ---------- */
+
+:root {
+  --azure: #4A6FA5;
+  --clay: #B8792F;
+  --plum: #6B4C7A;
+}
+
+.status-new .dot { background: var(--steel); }
+.status-confirmed .dot { background: var(--azure); }
+.status-preparing .dot { background: var(--clay); }
+.status-shipping .dot { background: var(--plum); }
+.status-delivered .dot { background: var(--forest); }
+.status-cancelled .dot { background: var(--rust); }
