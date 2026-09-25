@@ -308,3 +308,55 @@ body {
 .status-shipping .dot { background: var(--plum); }
 .status-delivered .dot { background: var(--forest); }
 .status-cancelled .dot { background: var(--rust); }
+
+/* ---------- DASHBOARD ---------- */
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.2rem 1.3rem;
+  height: 100%;
+}
+
+.stat-card-warn {
+  border-color: var(--amber);
+}
+
+.stat-label {
+  color: var(--steel);
+  font-size: 0.82rem;
+  margin-bottom: 0.4rem;
+}
+
+.stat-value {
+  font-family: 'Fraunces', serif;
+  font-size: 1.9rem;
+  font-weight: 500;
+}
+
+.top-product-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.top-product-row:last-child {
+  border-bottom: none;
+}
+
+.top-product-bar {
+  background: var(--paper);
+  border-radius: 4px;
+  height: 6px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.top-product-bar span {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+}
