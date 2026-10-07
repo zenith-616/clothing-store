@@ -1,4 +1,4 @@
-const API_URL = "https://clothing-store-8b1m.onrender.com";
+const API_URL = "https://clothing-store-backend-k9z7.onrender.com";
 
 function getToken() {
   return localStorage.getItem("token");
