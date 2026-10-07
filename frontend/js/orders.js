@@ -93,7 +93,7 @@ function openOrderModal(order) {
   document.getElementById("orderItemsBody").innerHTML = order.items.map(item => `
     <tr>
       <td>Variant #${item.variant_id}</td>
-      <td>${item.variant.size} / ${item.variant.color}</td>
+      <td>${item.variant ? `${item.variant.size} / ${item.variant.color}` : "O'chirilgan"}</td>
       <td>${item.quantity}</td>
       <td>${formatPrice(item.price)}</td>
     </tr>

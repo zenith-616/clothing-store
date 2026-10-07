@@ -122,7 +122,7 @@ class OrderItemOut(BaseModel):
     variant_id: int
     quantity: int
     price: float
-    variant: VariantOut
+    variant: VariantOut | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -85,10 +85,24 @@ def update_product(
 @router.delete(
     "/{product_id}",
     status_code=204,
-    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+    dependencies=[Depends(get_current_user)],
 )
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     product = get_product_or_404(product_id, db)
+
+    variant_ids = [v.id for v in product.variants]
+    if variant_ids:
+        used = (
+            db.query(models.OrderItem)
+            .filter(models.OrderItem.variant_id.in_(variant_ids))
+            .first()
+        )
+        if used:
+            raise HTTPException(
+                status_code=400,
+                detail="Bu mahsulot buyurtmalarda ishlatilgan, o'chirib bo'lmaydi. Buning o'rniga 'Nofaol' qiling.",
+            )
+
     db.delete(product)
     db.commit()
     return Response(status_code=204)
@@ -150,12 +164,24 @@ def update_variant(
 @router.delete(
     "/{product_id}/variants/{variant_id}",
     status_code=204,
-    dependencies=[Depends(get_current_user)],  # ← himoyalangan
+    dependencies=[Depends(get_current_user)],
 )
 def delete_variant(product_id: int, variant_id: int, db: Session = Depends(get_db)):
     variant = db.get(models.ProductVariant, variant_id)
     if variant is None or variant.product_id != product_id:
         raise HTTPException(status_code=404, detail="Variant topilmadi")
+
+    used = (
+        db.query(models.OrderItem)
+        .filter(models.OrderItem.variant_id == variant_id)
+        .first()
+    )
+    if used:
+        raise HTTPException(
+            status_code=400,
+            detail="Bu variant buyurtmalarda ishlatilgan, o'chirib bo'lmaydi",
+        )
+
     db.delete(variant)
     db.commit()
     return Response(status_code=204)
