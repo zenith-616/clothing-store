@@ -1,5 +1,7 @@
+from telegram_notify import notify_customer
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 
 import models
 import schemas
@@ -9,7 +11,13 @@ from security import get_current_user
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
 STATUSES = ["yangi", "tasdiqlandi", "tayyorlanmoqda", "yetkazilmoqda", "yetkazildi", "bekor qilindi"]
-
+STATUS_TEXT = {
+    "tasdiqlandi": "tasdiqlandi ✅",
+    "tayyorlanmoqda": "tayyorlanmoqda 📦",
+    "yetkazilmoqda": "yetkazilmoqda 🚚",
+    "yetkazildi": "yetkazildi 🎉",
+    "bekor qilindi": "bekor qilindi ❌",
+}
 # Qaysi statusdan qaysisiga o'tish mumkin
 ALLOWED_TRANSITIONS = {
     "yangi": ["tasdiqlandi", "bekor qilindi"],
@@ -133,4 +141,9 @@ def update_status(
     order.status = data.status
     db.commit()
     db.refresh(order)
+
+    text = STATUS_TEXT.get(data.status)
+    if text and order.customer.telegram_id:
+        notify_customer(order.customer.telegram_id, f"Buyurtma #{order.id}: {text}")
+
     return order
