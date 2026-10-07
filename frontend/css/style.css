@@ -360,3 +360,14 @@ body {
   height: 100%;
   background: var(--gold);
 }
+
+.btn-delete {
+  margin-left: 6px;
+  color: var(--rust);
+  border-color: var(--rust);
+}
+
+.btn-delete:hover {
+  background: var(--rust);
+  color: #fff;
+}

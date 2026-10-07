@@ -52,6 +52,7 @@ async function loadProducts() {
         <td>${statusBadge(p)}</td>
         <td class="text-end">
           <button class="btn-edit" onclick="openProductModal(currentProducts[${idx}])">Tahrirlash</button>
+          <button class="btn-edit btn-delete" onclick="deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')">O'chirish</button>
         </td>
       </tr>
     `).join("");
@@ -232,6 +233,19 @@ document.getElementById("saveProductBtn").addEventListener("click", async () => 
     saveBtn.textContent = "Saqlash";
   }
 });
+
+
+async function deleteProduct(id, name) {
+  if (!confirm(`"${name}" mahsulotini o'chirmoqchimisiz? Bu amalni bekor qilib bo'lmaydi.`)) {
+    return;
+  }
+  try {
+    await apiFetch(`/products/${id}`, { method: "DELETE" });
+    loadProducts();
+  } catch (err) {
+    alert(err.message);
+  }
+}
 
 loadCategories();
 loadProducts();
