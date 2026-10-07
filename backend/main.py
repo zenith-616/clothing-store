@@ -1,14 +1,43 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from database import engine, Base
+from database import engine, Base, SessionLocal
 import models
+from security import hash_password
 from routers import categories, brands, products, auth, customers, orders, dashboard, storefront
 
 Base.metadata.create_all(bind=engine)
 
+
+def create_default_admin():
+    db = SessionLocal()
+    try:
+        email = os.getenv("ADMIN_EMAIL")
+        password = os.getenv("ADMIN_PASSWORD")
+        if not email or not password:
+            return
+        existing = db.query(models.User).filter(models.User.email == email).first()
+        if existing:
+            return
+        admin = models.User(
+            full_name="Admin",
+            email=email,
+            password_hash=hash_password(password),
+            role="admin",
+        )
+        db.add(admin)
+        db.commit()
+    finally:
+        db.close()
+
+
+create_default_admin()
+
 app = FastAPI(title="Clothing Store API")
+
 
 origins = [
     "http://localhost:5500",
