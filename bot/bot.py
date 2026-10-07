@@ -3,22 +3,6 @@ import os
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-
-class HealthHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is running")
-
-    def log_message(self, format, *args):
-        pass  # keraksiz loglarni o'chiradi
-
-
-def run_health_server():
-    port = int(os.getenv("PORT", 10000))
-    server = HTTPServer(("0.0.0.0", port), HealthHandler)
-    server.serve_forever()
-
 from aiogram import Bot, Dispatcher
 from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, WebAppInfo
@@ -31,6 +15,22 @@ WEBAPP_URL = os.getenv("WEBAPP_URL")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
+
+
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is running")
+
+    def log_message(self, format, *args):
+        pass
+
+
+def run_health_server():
+    port = int(os.getenv("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), HealthHandler)
+    server.serve_forever()
 
 
 @dp.message(CommandStart())
@@ -50,8 +50,7 @@ async def start(message: Message):
 async def main():
     await dp.start_polling(bot)
 
-threading.Thread(target=run_health_server, daemon=True).start()
-
 
 if __name__ == "__main__":
+    threading.Thread(target=run_health_server, daemon=True).start()
     asyncio.run(main())
