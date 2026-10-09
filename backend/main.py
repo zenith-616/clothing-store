@@ -8,8 +8,21 @@ from database import engine, Base, SessionLocal
 import models
 from security import hash_password
 from routers import categories, brands, products, auth, customers, orders, dashboard, storefront
+from sqlalchemy import text
 
 Base.metadata.create_all(bind=engine)
+def fix_telegram_id_column():
+    with engine.connect() as conn:
+        try:
+            conn.execute(text(
+                "ALTER TABLE customers ALTER COLUMN telegram_id TYPE BIGINT"
+            ))
+            conn.commit()
+        except Exception:
+            pass  # SQLite'da bu buyruq kerak emas, xato chiqsa e'tiborsiz qoldiramiz
+
+
+fix_telegram_id_column()
 
 
 def create_default_admin():

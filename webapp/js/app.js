@@ -1,6 +1,6 @@
 // ==== SOZLAMALAR ====
-// DIQQAT: O'zingizning Render'dagi backend manzilingizni kiriting (oxirida / belgisiz)
-const API_URL = "https://clothing-store-backend-k9z7.onrender.com"; 
+// Backend va Web App bitta manzilda (Render) ishlaydi, shuning uchun bo'sh qoldiramiz
+const API_URL = "";
 
 // ==== TELEGRAM ====
 const tg = window.Telegram?.WebApp;
@@ -37,17 +37,8 @@ async function apiPost(path, body) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  
   const data = await res.json();
-  
-  if (!res.ok) {
-    let errMsg = data.detail || "Xatolik yuz berdi";
-    // Agar backend xatoni Array qilib qaytarsa (FastAPI xatolarini to'g'ri o'qish uchun)
-    if (Array.isArray(data.detail)) {
-      errMsg = data.detail.map(err => `${err.loc[err.loc.length - 1]}: ${err.msg}`).join('\n');
-    }
-    throw new Error(errMsg);
-  }
+  if (!res.ok) throw new Error(data.detail || "Xatolik yuz berdi");
   return data;
 }
 
@@ -130,6 +121,7 @@ function changeQty(delta) {
   document.getElementById("qtyValue").textContent = qty;
 }
 
+
 function addToCart() {
   if (!selectedVariant) {
     alert("Iltimos, o'lcham va rangni tanlang");
@@ -208,19 +200,13 @@ async function confirmOrder() {
   errorBox.classList.add("hidden");
 
   const fullName = document.getElementById("cFullName").value.trim();
-  let phone = document.getElementById("cPhone").value.trim();
+  const phone = document.getElementById("cPhone").value.trim();
   const address = document.getElementById("cAddress").value.trim();
 
   if (!fullName || !phone || !address) {
     errorBox.textContent = "Barcha maydonlarni to'ldiring";
     errorBox.classList.remove("hidden");
     return;
-  }
-
-  // Telefon raqamdagi barcha bo'shliqlarni tozalash va "+" belgisini qo'shish
-  phone = phone.replace(/\s+/g, '');
-  if (!phone.startsWith("+")) {
-    phone = "+" + phone;
   }
 
   const btn = document.getElementById("confirmOrderBtn");
@@ -231,13 +217,13 @@ async function confirmOrder() {
     await apiPost("/storefront/register", {
       telegram_id: telegramId,
       full_name: fullName,
-      phone: phone, // Tozalangan raqam
-      address: address,
+      phone,
+      address,
     });
 
     await apiPost("/storefront/orders", {
       telegram_id: telegramId,
-      address: address,
+      address,
       items: cart.map(i => ({ variant_id: i.variant_id, quantity: i.quantity })),
     });
 

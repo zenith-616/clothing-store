@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, Text
+from sqlalchemy import Column, Integer, BigInteger, String, Float, Boolean, ForeignKey, Text, DateTime
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -74,7 +74,7 @@ class Customer(Base):
     id = Column(Integer, primary_key=True, index=True)
     full_name = Column(String(100), nullable=False)
     phone = Column(String(20), nullable=False, unique=True, index=True)
-    telegram_id = Column(Integer, nullable=True, unique=True)  # bot uchun, hozircha bo'sh
+    telegram_id = Column(BigInteger, nullable=True, unique=True)  # bot uchun, hozircha bo'sh
     address = Column(String(255), nullable=True)
 
     orders = relationship("Order", back_populates="customer")
