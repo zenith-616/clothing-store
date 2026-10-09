@@ -203,8 +203,31 @@ async function confirmOrder() {
   const phone = document.getElementById("cPhone").value.trim();
   const address = document.getElementById("cAddress").value.trim();
 
-  if (!fullName || !phone || !address) {
+    if (!fullName || !phone || !address) {
     errorBox.textContent = "Barcha maydonlarni to'ldiring";
+    errorBox.classList.remove("hidden");
+    return;
+  }
+
+  // Ism faqat harf, bo'shliq va chiziqchadan iborat bo'lishi kerak
+  const namePattern = /^[A-Za-zА-Яа-яЎўҚқҒғҲҳ\s'-]+$/;
+  if (!namePattern.test(fullName) || fullName.length < 3) {
+    errorBox.textContent = "Ism noto'g'ri kiritildi. Faqat harflardan foydalaning";
+    errorBox.classList.remove("hidden");
+    return;
+  }
+
+  // Telefon: faqal raqam, +, bo'shliq va chiziqcha, kamida 9 ta raqam
+  const digitsOnly = phone.replace(/\D/g, "");
+  if (digitsOnly.length < 9 || digitsOnly.length > 13) {
+    errorBox.textContent = "Telefon raqam noto'g'ri. Masalan: +998901234567";
+    errorBox.classList.remove("hidden");
+    return;
+  }
+
+  // Manzil: faqat raqamlardan iborat bo'lmasligi kerak
+  if (/^\d+$/.test(address.trim())) {
+    errorBox.textContent = "Manzilni to'liq kiriting (ko'cha, uy raqami)";
     errorBox.classList.remove("hidden");
     return;
   }

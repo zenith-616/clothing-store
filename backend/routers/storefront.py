@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -9,11 +9,35 @@ from database import get_db
 router = APIRouter(prefix="/storefront", tags=["Storefront"])
 
 
+import re
+
 class TelegramRegisterIn(BaseModel):
     telegram_id: int
-    full_name: str = Field(min_length=1, max_length=100)
+    full_name: str = Field(min_length=3, max_length=100)
     phone: str = Field(min_length=7, max_length=20)
     address: str | None = None
+
+    @field_validator("full_name")
+    @classmethod
+    def validate_full_name(cls, v: str) -> str:
+        if not re.match(r"^[A-Za-zА-Яа-яЎўҚқҒғҲҳ\s'-]+$", v):
+            raise ValueError("Ism faqat harflardan iborat bo'lishi kerak")
+        return v
+
+    @field_validator("phone")
+    @classmethod
+    def validate_phone(cls, v: str) -> str:
+        digits = re.sub(r"\D", "", v)
+        if len(digits) < 9 or len(digits) > 13:
+            raise ValueError("Telefon raqam noto'g'ri formatda")
+        return v
+
+    @field_validator("address")
+    @classmethod
+    def validate_address(cls, v: str | None) -> str | None:
+        if v and v.strip().isdigit():
+            raise ValueError("Manzilni to'liq kiriting")
+        return v
 
 
 class TelegramOrderItemIn(BaseModel):
