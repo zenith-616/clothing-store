@@ -3,17 +3,16 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
+from sqlalchemy import text
 
 from database import engine, Base, SessionLocal
 import models
 from security import hash_password
-from sqlalchemy import text
 from routers import categories, brands, products, auth, customers, orders, dashboard, storefront, users
 
-app.include_router(users.router)
-
 Base.metadata.create_all(bind=engine)
+
+
 def fix_telegram_id_column():
     with engine.connect() as conn:
         try:
@@ -22,7 +21,7 @@ def fix_telegram_id_column():
             ))
             conn.commit()
         except Exception:
-            pass  # SQLite'da bu buyruq kerak emas, xato chiqsa e'tiborsiz qoldiramiz
+            pass
 
 
 fix_telegram_id_column()
@@ -54,7 +53,6 @@ create_default_admin()
 
 app = FastAPI(title="Clothing Store API")
 
-
 origins = [
     "https://clothing-store-admin-eu9q.onrender.com",
 ]
@@ -75,8 +73,10 @@ app.include_router(customers.router)
 app.include_router(orders.router)
 app.include_router(dashboard.router)
 app.include_router(storefront.router)
+app.include_router(users.router)
 
 app.mount("/app", StaticFiles(directory="../webapp", html=True), name="webapp")
+
 
 @app.get("/")
 def root():
