@@ -67,11 +67,11 @@ async function loadOrders() {
 
     tbody.innerHTML = currentOrders.map((o, idx) => `
       <tr>
-        <td>#${o.id}</td>
-        <td>${o.customer.full_name}</td>
-        <td>${formatDate(o.created_at)}</td>
-        <td>${formatPrice(o.total_price)}</td>
-        <td>${orderStatusBadge(o.status)}</td>
+        <td data-label="#">#${o.id}</td>
+        <td data-label="Mijoz">${o.customer.full_name}</td>
+        <td data-label="Sana">${formatDate(o.created_at)}</td>
+        <td data-label="Summa">${formatPrice(o.total_price)}</td>
+        <td data-label="Holati">${orderStatusBadge(o.status)}</td>
         <td class="text-end">
           <button class="btn-edit" onclick="openOrderModal(currentOrders[${idx}])">Ko'rish</button>
         </td>

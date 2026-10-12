@@ -45,11 +45,11 @@ async function loadProducts() {
 
     tbody.innerHTML = currentProducts.map((p, idx) => `
       <tr>
-        <td>${p.name}</td>
-        <td>${p.category ? p.category.name : "-"}</td>
-        <td>${p.brand ? p.brand.name : "-"}</td>
-        <td>${formatPrice(p.price)}</td>
-        <td>${statusBadge(p)}</td>
+        <td data-label="Nomi">${p.name}</td>
+        <td data-label="Kategoriya">${p.category ? p.category.name : "-"}</td>
+        <td data-label="Brend">${p.brand ? p.brand.name : "-"}</td>
+        <td data-label="Narxi">${formatPrice(p.price)}</td>
+        <td data-label="Holati">${statusBadge(p)}</td>
         <td class="text-end">
           <button class="btn-edit" onclick="openProductModal(currentProducts[${idx}])">Tahrirlash</button>
           <button class="btn-edit btn-delete" onclick="deleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')">O'chirish</button>

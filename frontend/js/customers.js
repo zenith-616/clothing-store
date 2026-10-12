@@ -57,10 +57,10 @@ async function loadCustomers() {
 
     tbody.innerHTML = currentCustomers.map((c, idx) => `
       <tr>
-        <td>${c.full_name}</td>
-        <td>${c.phone}</td>
-        <td>${c.address || "-"}</td>
-        <td><button class="btn-edit" onclick="viewCustomerOrders(currentCustomers[${idx}])">Ko'rish</button></td>
+        <td data-label="Ism">${c.full_name}</td>
+        <td data-label="Telefon">${c.phone}</td>
+        <td data-label="Manzil">${c.address || "-"}</td>
+        <td data-label="Buyurtmalar"><button class="btn-edit" onclick="viewCustomerOrders(currentCustomers[${idx}])">Ko'rish</button></td>
         <td class="text-end"><button class="btn-edit" onclick="openCustomerModal(currentCustomers[${idx}])">Tahrirlash</button></td>
       </tr>
     `).join("");

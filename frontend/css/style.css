@@ -371,3 +371,94 @@ body {
   background: var(--rust);
   color: #fff;
 }
+
+/* ---------- RESPONSIVE TUZATISHLAR ---------- */
+
+@media (max-width: 767px) {
+  .app-nav .container-fluid {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .app-nav .d-flex.align-items-center.gap-2 {
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 8px !important;
+  }
+
+  .app-nav .nav-link {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+
+  .app-nav .btn-logout {
+    margin-left: auto;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 10px;
+  }
+
+  .page-header h4 {
+    font-size: 1.4rem;
+  }
+
+  .data-table thead {
+    display: none;
+  }
+
+  .data-table tbody tr {
+    display: block;
+    border-bottom: 2px solid var(--line);
+    padding: 10px 0;
+  }
+
+  .data-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: none;
+    padding: 6px 1rem;
+    text-align: right;
+  }
+
+  .data-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 500;
+    color: var(--steel);
+    text-align: left;
+  }
+
+  .data-table tbody td:last-child {
+    justify-content: flex-end;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .modal-dialog {
+    margin: 10px;
+  }
+
+  .variant-table th,
+  .variant-table td {
+    font-size: 0.8rem;
+    padding: 6px 4px;
+  }
+}
+
+@media (max-width: 575px) {
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .row.g-2 .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
