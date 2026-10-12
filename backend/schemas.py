@@ -152,3 +152,9 @@ class DashboardOut(BaseModel):
     new_orders: int
     low_stock_variants: int
     top_products: list[TopProduct]
+    daily_revenue: list[DailyRevenue]
+
+class DailyRevenue(BaseModel):
+    date: str
+    revenue: float
+    orders: int

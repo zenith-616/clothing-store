@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import func
@@ -68,15 +68,46 @@ def dashboard(db: Session = Depends(get_db)):
         .limit(5)
         .all()
     )
+        # Oxirgi 7 kunlik daromad
+    daily_data = []
+    for i in range(6, -1, -1):
+        day_start = (datetime.utcnow() - timedelta(days=i)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        day_end = day_start + timedelta(days=1)
+
+        day_revenue = (
+            db.query(func.coalesce(func.sum(models.Order.total_price), 0))
+            .filter(
+                models.Order.created_at >= day_start,
+                models.Order.created_at < day_end,
+                valid,
+            )
+            .scalar()
+        )
+        day_orders = (
+            db.query(func.count(models.Order.id))
+            .filter(
+                models.Order.created_at >= day_start,
+                models.Order.created_at < day_end,
+            )
+            .scalar()
+        )
+        daily_data.append({
+            "date": day_start.strftime("%d.%m"),
+            "revenue": day_revenue,
+            "orders": day_orders,
+        })
 
     return {
-        "today_orders": today_orders,
-        "today_revenue": today_revenue,
-        "total_orders": total_orders,
-        "total_revenue": total_revenue,
-        "new_orders": new_orders,
-        "low_stock_variants": low_stock,
-        "top_products": [
-            {"product_id": r.id, "name": r.name, "sold": int(r.sold)} for r in rows
-        ],
+    "today_orders": today_orders,
+    "today_revenue": today_revenue,
+    "total_orders": total_orders,
+    "total_revenue": total_revenue,
+    "new_orders": new_orders,
+    "low_stock_variants": low_stock,
+    "top_products": [
+        {"product_id": r.id, "name": r.name, "sold": int(r.sold)} for r in rows
+    ],
+    "daily_revenue": daily_data,
     }

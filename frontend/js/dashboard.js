@@ -38,10 +38,50 @@ async function loadDashboard() {
         </div>
       </div>
     `).join("");
+      renderChart(data.daily_revenue);
   } catch (err) {
     errorBox.textContent = err.message;
     errorBox.classList.remove("d-none");
   }
+}
+
+function renderChart(dailyRevenue) {
+  const ctx = document.getElementById("revenueChart");
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: dailyRevenue.map(d => d.date),
+      datasets: [{
+        label: "Daromad",
+        data: dailyRevenue.map(d => d.revenue),
+        borderColor: "#A9825A",
+        backgroundColor: "rgba(169, 130, 90, 0.1)",
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: "#A9825A",
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => money(ctx.parsed.y),
+          },
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: (value) => new Intl.NumberFormat("uz-UZ").format(value),
+          },
+        },
+      },
+    },
+  });
 }
 
 loadDashboard();
