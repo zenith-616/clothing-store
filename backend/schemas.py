@@ -77,6 +77,7 @@ class UserOut(BaseModel):
     full_name: str
     email: str
     role: str
+    is_active: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -158,3 +159,15 @@ class DailyRevenue(BaseModel):
     date: str
     revenue: float
     orders: int
+
+class UserCreate(BaseModel):
+    full_name: str = Field(min_length=1, max_length=100)
+    email: str = Field(min_length=5, max_length=120)
+    password: str = Field(min_length=6, max_length=100)
+    role: str = Field(default="operator")
+
+
+class UserUpdate(BaseModel):
+    full_name: str = Field(min_length=1, max_length=100)
+    role: str
+    is_active: bool

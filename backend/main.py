@@ -4,11 +4,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+
 from database import engine, Base, SessionLocal
 import models
 from security import hash_password
-from routers import categories, brands, products, auth, customers, orders, dashboard, storefront
 from sqlalchemy import text
+from routers import categories, brands, products, auth, customers, orders, dashboard, storefront, users
+
+app.include_router(users.router)
 
 Base.metadata.create_all(bind=engine)
 def fix_telegram_id_column():
