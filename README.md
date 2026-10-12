@@ -109,6 +109,11 @@ python bot.py
 
 [Rahmatulloh] — Software Engineering talabasi
 
+## Jonli havolalar
+
+- Admin panel: https://clothing-store-admin-eu9q.onrender.com
+- Telegram bot: https://t.me/kiyimdodkoni_bot
+
 ## Litsenziya
 
 O'quv loyihasi sifatida yaratilgan.
