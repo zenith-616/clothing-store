@@ -33,6 +33,7 @@ class Product(Base):
     description = Column(Text, nullable=True)
     price = Column(Float, nullable=False)
     is_active = Column(Boolean, default=True)
+    image_url = Column(String(500), nullable=True)
 
     category_id = Column(Integer, ForeignKey("categories.id"))
     brand_id = Column(Integer, ForeignKey("brands.id"))

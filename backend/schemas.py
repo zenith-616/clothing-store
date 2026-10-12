@@ -49,10 +49,11 @@ class VariantOut(BaseModel):
 class ProductCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     description: str | None = None
-    price: float = Field(gt=0)  # gt=0: noldan katta bo'lsin
+    price: float = Field(gt=0)
     category_id: int
     brand_id: int | None = None
     is_active: bool = True
+    image_url: str | None = None
 
 
 class ProductUpdate(ProductCreate):
@@ -65,10 +66,11 @@ class ProductOut(BaseModel):
     description: str | None
     price: float
     is_active: bool
+    image_url: str | None
     category: CategoryOut | None
     brand: BrandOut | None
     variants: list[VariantOut] = []
-    total_stock: int = 0  # barcha variantlar yig'indisi (badge uchun)
+    total_stock: int = 0
 
     model_config = ConfigDict(from_attributes=True)
 

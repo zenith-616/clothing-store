@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, File
 from sqlalchemy.orm import Session
+
+import cloudinary.uploader
 
 import models
 import schemas
+import cloudinary_config  # noqa: F401 — konfiguratsiyani ishga tushiradi
 from database import get_db
 from security import get_current_user
 
@@ -185,3 +188,27 @@ def delete_variant(product_id: int, variant_id: int, db: Session = Depends(get_d
     db.delete(variant)
     db.commit()
     return Response(status_code=204)
+
+@router.post(
+    "/{product_id}/image",
+    response_model=schemas.ProductOut,
+    dependencies=[Depends(get_current_user)],
+)
+async def upload_product_image(
+    product_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)
+):
+    product = get_product_or_404(product_id, db)
+
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Faqat rasm fayllari qabul qilinadi")
+
+    result = cloudinary.uploader.upload(
+        file.file,
+        folder="clothing-store",
+        transformation=[{"width": 800, "height": 800, "crop": "limit"}],
+    )
+
+    product.image_url = result["secure_url"]
+    db.commit()
+    db.refresh(product)
+    return product

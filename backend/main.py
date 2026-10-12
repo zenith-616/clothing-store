@@ -26,6 +26,19 @@ def fix_telegram_id_column():
 
 fix_telegram_id_column()
 
+def fix_product_image_column():
+    with engine.connect() as conn:
+        try:
+            conn.execute(text(
+                "ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url VARCHAR(500)"
+            ))
+            conn.commit()
+        except Exception:
+            pass
+
+
+fix_product_image_column()
+
 
 def create_default_admin():
     db = SessionLocal()
