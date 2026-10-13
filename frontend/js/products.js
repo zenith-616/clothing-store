@@ -45,7 +45,14 @@ async function loadProducts() {
 
     tbody.innerHTML = currentProducts.map((p, idx) => `
       <tr>
-        <td data-label="Nomi">${p.name}</td>
+        <td data-label="Nomi">
+          <div class="d-flex align-items-center gap-2">
+            ${p.image_url
+              ? `<img src="${p.image_url}" class="product-thumb" alt="">`
+              : `<div class="product-thumb-placeholder">Rasm</div>`}
+            <span>${p.name}</span>
+          </div>
+        </td>
         <td data-label="Kategoriya">${p.category ? p.category.name : "-"}</td>
         <td data-label="Brend">${p.brand ? p.brand.name : "-"}</td>
         <td data-label="Narxi">${formatPrice(p.price)}</td>
@@ -115,9 +122,23 @@ async function loadModalOptions() {
     brands.map(b => `<option value="${b.id}">${b.name}</option>`).join("");
 }
 
+let currentImageUrl = null;
+
 function openProductModal(product = null) {
   document.getElementById("modalError").classList.add("d-none");
   deletedVariantIds = [];
+  currentImageUrl = product ? product.image_url : null;
+
+  const preview = document.getElementById("pImagePreview");
+  if (currentImageUrl) {
+    preview.src = currentImageUrl;
+    preview.classList.remove("d-none");
+  } else {
+    preview.src = "";
+    preview.classList.add("d-none");
+  }
+  document.getElementById("imageUploadStatus").textContent = "";
+  document.getElementById("pImageInput").value = "";
 
   document.getElementById("productModalTitle").textContent =
     product ? "Mahsulotni tahrirlash" : "Yangi mahsulot";
@@ -246,6 +267,50 @@ async function deleteProduct(id, name) {
     alert(err.message);
   }
 }
+
+document.getElementById("pImageInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const productId = document.getElementById("productId").value;
+  const statusEl = document.getElementById("imageUploadStatus");
+
+  if (!productId) {
+    statusEl.textContent = "Avval mahsulotni saqlang, keyin rasm yuklang";
+    statusEl.className = "text-danger small";
+    return;
+  }
+
+  statusEl.textContent = "Yuklanmoqda...";
+  statusEl.className = "text-muted small";
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const token = getToken();
+    const res = await fetch(`${API_URL}/products/${productId}/image`, {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${token}` },
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Yuklashda xatolik");
+
+    currentImageUrl = data.image_url;
+    const preview = document.getElementById("pImagePreview");
+    preview.src = currentImageUrl;
+    preview.classList.remove("d-none");
+    statusEl.textContent = "Rasm yuklandi ✓";
+    statusEl.className = "text-success small";
+
+    loadProducts();
+  } catch (err) {
+    statusEl.textContent = err.message;
+    statusEl.className = "text-danger small";
+  }
+});
 
 loadCategories();
 loadProducts();

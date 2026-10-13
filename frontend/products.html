@@ -75,6 +75,16 @@
         <form id="productForm">
           <input type="hidden" id="productId">
           <div class="row g-3">
+            <div class="col-12 text-center">
+              <img id="pImagePreview" src="" alt="" class="product-image-preview d-none">
+              <div class="mb-2">
+                <label class="btn-edit" for="pImageInput" style="cursor: pointer; display: inline-block;">
+                  📷 Rasm tanlash
+                </label>
+                <input type="file" id="pImageInput" accept="image/*" class="d-none">
+              </div>
+              <div id="imageUploadStatus" class="text-muted small"></div>
+            </div>
             <div class="col-md-8">
               <label class="form-label">Nomi</label>
               <input type="text" class="form-control" id="pName" required>
