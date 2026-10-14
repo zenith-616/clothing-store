@@ -197,6 +197,7 @@ document.getElementById("saveProductBtn").addEventListener("click", async () => 
     category_id: Number(categoryId),
     brand_id: document.getElementById("pBrand").value ? Number(document.getElementById("pBrand").value) : null,
     is_active: document.getElementById("pActive").checked,
+    image_url: currentImageUrl,   // ← yangi qator: hozirgi rasmni saqlab qolish
   };
 
   const saveBtn = document.getElementById("saveProductBtn");
