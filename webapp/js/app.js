@@ -80,6 +80,9 @@ function renderProducts() {
   }
   grid.innerHTML = products.map(p => `
     <div class="card" onclick="openProduct(${p.id})">
+      ${p.image_url
+        ? `<img src="${p.image_url}" class="product-image" alt="${p.name}">`
+        : `<div class="product-image-placeholder">Rasm yo'q</div>`}
       <div class="name">${p.name}</div>
       <div class="price">${money(p.price)}</div>
       ${stockBadge(p)}
@@ -94,6 +97,13 @@ function openProduct(id) {
   qty = 1;
 
   document.getElementById("pTitle").textContent = activeProduct.name;
+    const imgEl = document.getElementById("pImage");
+  if (activeProduct.image_url) {
+    imgEl.src = activeProduct.image_url;
+    imgEl.style.display = "block";
+  } else {
+    imgEl.style.display = "none";
+  }
   document.getElementById("pDesc").textContent = activeProduct.description || "";
   document.getElementById("pPrice").textContent = money(activeProduct.price);
   document.getElementById("qtyValue").textContent = qty;
