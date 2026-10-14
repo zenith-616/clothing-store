@@ -97,7 +97,7 @@ function openProduct(id) {
   qty = 1;
 
   document.getElementById("pTitle").textContent = activeProduct.name;
-    const imgEl = document.getElementById("pImage");
+  const imgEl = document.getElementById("pImage");
   if (activeProduct.image_url) {
     imgEl.src = activeProduct.image_url;
     imgEl.style.display = "block";
