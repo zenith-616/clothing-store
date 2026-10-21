@@ -2,10 +2,10 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Kiyim do'koni</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=5">
 </head>
 <body>
 
@@ -22,74 +22,79 @@
   <div id="productGrid" class="grid"></div>
 </main>
 
-<!-- MAHSULOT TAFSILOTI -->
+<!-- ============ MAHSULOT TAFSILOTI ============ -->
 <div id="productSheet" class="sheet hidden">
   <div class="sheet-inner">
     <button class="close-btn" onclick="closeSheet('productSheet')">✕</button>
-    <div class="sheet-inner">
-    <button class="close-btn" onclick="closeSheet('productSheet')">✕</button>
-    <img id="pImage" src="" alt="" class="product-image d-none" style="display:none;">
-    <h3 id="pTitle"></h3>
-    <h3 id="pTitle"></h3>
-    <p id="pDesc" class="muted"></p>
-    <p id="pPrice" class="price-lg"></p>
+    <div class="sheet-body">
+      <img id="pImage" class="detail-image hidden" alt="">
+      <h3 id="pTitle"></h3>
+      <p id="pDesc" class="muted"></p>
+      <p id="pPrice" class="price-lg"></p>
 
-    <div class="field-label">O'lcham va rang</div>
-    <div id="variantOptions" class="variant-grid"></div>
+      <div class="field-label">O'lcham va rang</div>
+      <div id="variantOptions" class="variant-grid"></div>
 
-    <div class="qty-row">
-      <span>Miqdor</span>
-      <div class="qty-control">
-        <button onclick="changeQty(-1)">−</button>
-        <span id="qtyValue">1</span>
-        <button onclick="changeQty(1)">+</button>
+      <div class="qty-row">
+        <span>Miqdor</span>
+        <div class="qty-control">
+          <button onclick="changeQty(-1)">−</button>
+          <span id="qtyValue">1</span>
+          <button onclick="changeQty(1)">+</button>
+        </div>
       </div>
-    </div>
 
-    <button class="primary-btn" id="addToCartBtn" onclick="addToCart()">Savatga qo'shish</button>
+      <button class="primary-btn" id="addToCartBtn" onclick="addToCart()">Savatga qo'shish</button>
+    </div>
   </div>
 </div>
 
-<!-- SAVAT -->
+<!-- ============ SAVAT ============ -->
 <div id="cartSheet" class="sheet hidden">
   <div class="sheet-inner">
     <button class="close-btn" onclick="closeSheet('cartSheet')">✕</button>
-    <h3>Savat</h3>
-    <div id="cartItems"></div>
-    <div class="total-row">
-      <span>Jami</span>
-      <strong id="cartTotal">0 so'm</strong>
+    <div class="sheet-body">
+      <h3>Savat</h3>
+      <div id="cartItems"></div>
+      <div class="total-row">
+        <span>Jami</span>
+        <strong id="cartTotal">0 so'm</strong>
+      </div>
+      <button class="primary-btn" id="goCheckoutBtn" onclick="openCheckout()">Buyurtma berish</button>
     </div>
-    <button class="primary-btn" id="goCheckoutBtn" onclick="openCheckout()">Buyurtma berish</button>
   </div>
 </div>
 
-<!-- CHECKOUT -->
+<!-- ============ CHECKOUT ============ -->
 <div id="checkoutSheet" class="sheet hidden">
   <div class="sheet-inner">
     <button class="close-btn" onclick="closeSheet('checkoutSheet')">✕</button>
-    <h3>Ma'lumotlaringiz</h3>
-    <div id="checkoutError" class="error hidden"></div>
-    <div class="field-label">To'liq ism</div>
-    <input type="text" id="cFullName" class="input">
-    <div class="field-label">Telefon</div>
-    <input type="text" id="cPhone" class="input" placeholder="+998901234567">
-    <div class="field-label">Manzil</div>
-    <input type="text" id="cAddress" class="input">
-    <button class="primary-btn" id="confirmOrderBtn" onclick="confirmOrder()">Buyurtmani tasdiqlash</button>
+    <div class="sheet-body">
+      <h3>Ma'lumotlaringiz</h3>
+      <div id="checkoutError" class="error hidden"></div>
+      <div class="field-label">To'liq ism</div>
+      <input type="text" id="cFullName" class="input">
+      <div class="field-label">Telefon</div>
+      <input type="text" id="cPhone" class="input" placeholder="+998901234567">
+      <div class="field-label">Manzil</div>
+      <input type="text" id="cAddress" class="input">
+      <button class="primary-btn" id="confirmOrderBtn" onclick="confirmOrder()">Buyurtmani tasdiqlash</button>
+    </div>
   </div>
 </div>
 
-<!-- MUVAFFAQIYAT -->
+<!-- ============ MUVAFFAQIYAT ============ -->
 <div id="successSheet" class="sheet hidden">
-  <div class="sheet-inner center">
-    <div class="success-icon">✓</div>
-    <h3>Buyurtma qabul qilindi!</h3>
-    <p class="muted">Tez orada siz bilan bog'lanamiz.</p>
-    <button class="primary-btn" onclick="restart()">Yopish</button>
+  <div class="sheet-inner">
+    <div class="sheet-body center">
+      <div class="success-icon">✓</div>
+      <h3>Buyurtma qabul qilindi!</h3>
+      <p class="muted">Tez orada siz bilan bog'lanamiz.</p>
+      <button class="primary-btn" onclick="restart()">Yopish</button>
+    </div>
   </div>
 </div>
 
-<script src="js/app.js"></script>
+<script src="js/app.js?v=5"></script>
 </body>
 </html>

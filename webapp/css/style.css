@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600&display=swap');
 
 * { box-sizing: border-box; }
-img {
-  max-width: 100%;
-}
+
+img { max-width: 100%; }
+
+.hidden { display: none !important; }
 
 body {
   margin: 0;
@@ -12,6 +13,10 @@ body {
   color: #22262B;
   padding-bottom: 24px;
 }
+
+body.no-scroll { overflow: hidden; }
+
+/* ---------- TOPBAR ---------- */
 
 .topbar {
   position: sticky; top: 0; z-index: 10;
@@ -24,8 +29,10 @@ body {
 
 .cart-btn {
   background: transparent; border: 1px solid #4A4F55; color: #F5F2EA;
-  border-radius: 20px; padding: 6px 12px; font-size: 0.9rem;
+  border-radius: 20px; padding: 6px 12px; font-size: 0.9rem; cursor: pointer;
 }
+
+/* ---------- KATEGORIYALAR ---------- */
 
 .chips {
   display: flex; gap: 8px; overflow-x: auto;
@@ -35,23 +42,48 @@ body {
 .chip {
   flex: none; padding: 6px 14px; border-radius: 20px;
   background: #fff; border: 1px solid #E4DFD3; font-size: 0.85rem;
-  white-space: nowrap;
+  white-space: nowrap; cursor: pointer;
 }
 
 .chip.active { background: #22262B; color: #fff; border-color: #22262B; }
 
+/* ---------- KATALOG ---------- */
+
 .grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
   padding: 0 16px;
 }
 
 .card {
   background: #fff; border: 1px solid #E4DFD3; border-radius: 10px;
-  padding: 12px; cursor: pointer;
+  padding: 12px; cursor: pointer; overflow: hidden;
 }
 
 .card .name { font-weight: 500; font-size: 0.92rem; margin: 6px 0 2px; }
 .card .price { color: #A9825A; font-weight: 600; font-size: 0.92rem; }
+
+.card-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  background: #F5F2EA;
+}
+
+.card-image-placeholder {
+  width: 100%;
+  height: 140px;
+  border-radius: 8px;
+  background: #F5F2EA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8B8578;
+  font-size: 0.8rem;
+}
 
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
@@ -64,30 +96,61 @@ body {
 .badge.low .dot { background: #B8863A; }
 .badge.ok .dot { background: #3F6B4D; }
 
-.sheet {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-  display: flex; align-items: flex-end; z-index: 50;
-}
+/* ---------- OYNALAR (SHEET) ---------- */
 
-.sheet.hidden { display: none; }
+.sheet {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex; align-items: flex-end; justify-content: center;
+}
 
 .sheet-inner {
-  background: #fff; width: 100%; max-height: 88vh; overflow-y: auto;
-  border-radius: 16px 16px 0 0; padding: 20px; position: relative;
+  position: relative;
+  background: #fff;
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
 }
 
-.sheet-inner.center { text-align: center; padding: 40px 20px; }
+.sheet-body {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px;
+}
+
+.sheet-body.center { text-align: center; padding: 40px 20px; }
+
+.sheet-body h3 { margin: 0 0 12px; padding-right: 40px; font-size: 1.15rem; }
+.sheet-body.center h3 { padding-right: 0; }
 
 .close-btn {
-  position: fixed;
-  top: 14px; right: 14px;
-  background: #F5F2EA; border: none; border-radius: 50%;
-  width: 30px; height: 30px; font-size: 0.9rem;
-  z-index: 60;
+  position: absolute; top: 12px; right: 12px; z-index: 5;
+  width: 32px; height: 32px; border: none; border-radius: 50%;
+  background: rgba(245, 242, 234, 0.95);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  font-size: 0.9rem; cursor: pointer;
 }
 
-.muted { color: #8B8578; font-size: 0.88rem; }
-.price-lg { font-family: 'Fraunces', serif; font-size: 1.3rem; color: #A9825A; margin: 8px 0 16px; }
+.detail-image {
+  width: 100%;
+  height: 260px;
+  object-fit: contain;
+  border-radius: 10px;
+  display: block;
+  margin-bottom: 14px;
+  background: #F5F2EA;
+}
+
+.muted { color: #8B8578; font-size: 0.88rem; margin: 0 0 8px; }
+
+.price-lg {
+  font-family: 'Fraunces', serif; font-size: 1.3rem; color: #A9825A;
+  margin: 8px 0 16px;
+}
 
 .field-label { font-size: 0.82rem; color: #8B8578; margin: 14px 0 6px; }
 
@@ -95,26 +158,27 @@ body {
 
 .variant-opt {
   padding: 8px 14px; border-radius: 8px; border: 1px solid #E4DFD3;
-  background: #fff; font-size: 0.88rem;
+  background: #fff; font-size: 0.88rem; cursor: pointer;
 }
 
 .variant-opt.selected { background: #22262B; color: #fff; border-color: #22262B; }
-.variant-opt.disabled { opacity: 0.4; }
+.variant-opt.disabled { opacity: 0.4; cursor: not-allowed; }
 
 .qty-row { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
 
 .qty-control { display: flex; align-items: center; gap: 12px; }
 .qty-control button {
   width: 32px; height: 32px; border-radius: 8px; border: 1px solid #E4DFD3;
-  background: #fff; font-size: 1.1rem;
+  background: #fff; font-size: 1.1rem; cursor: pointer;
 }
 
 .primary-btn {
   width: 100%; background: #A9825A; color: #fff; border: none;
   border-radius: 8px; padding: 13px; font-weight: 500; margin-top: 20px;
+  cursor: pointer;
 }
 
-.primary-btn:disabled { opacity: 0.5; }
+.primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .input {
   width: 100%; padding: 10px 12px; border: 1px solid #E4DFD3;
@@ -128,7 +192,7 @@ body {
 
 .cart-item .name { font-weight: 500; font-size: 0.9rem; }
 .cart-item .meta { color: #8B8578; font-size: 0.8rem; }
-.cart-item button { background: none; border: none; color: #B24C33; font-size: 1.1rem; }
+.cart-item button { background: none; border: none; color: #B24C33; font-size: 1.1rem; cursor: pointer; }
 
 .total-row {
   display: flex; justify-content: space-between; align-items: center;
@@ -140,44 +204,8 @@ body {
   font-size: 0.85rem; margin-bottom: 12px;
 }
 
-.error.hidden { display: none; }
-
 .success-icon {
   width: 56px; height: 56px; border-radius: 50%; background: #3F6B4D;
   color: #fff; display: flex; align-items: center; justify-content: center;
   font-size: 1.6rem; margin: 0 auto 16px;
-}
-
-/* ---------- MAHSULOT RASMLARI ---------- */
-
-.card .product-image {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  background: #F5F2EA;
-  display: block;
-}
-
-.card .product-image-placeholder {
-  width: 100%;
-  height: 140px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  background: #F5F2EA;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #8B8578;
-  font-size: 0.8rem;
-}
-
-#pImage {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 14px;
-  display: block;
 }

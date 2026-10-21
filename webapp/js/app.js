@@ -22,8 +22,34 @@ function money(n) {
   return new Intl.NumberFormat("uz-UZ").format(n) + " so'm";
 }
 
-function openSheet(id) { document.getElementById(id).classList.remove("hidden"); }
-function closeSheet(id) { document.getElementById(id).classList.add("hidden"); }
+// HTML ichiga qo'yiladigan matnni xavfsiz qilish
+function esc(text) {
+  return String(text ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+
+// Bir vaqtda faqat BITTA oyna ochiq bo'ladi
+const SHEETS = ["productSheet", "cartSheet", "checkoutSheet", "successSheet"];
+
+function openSheet(id) {
+  SHEETS.forEach(s => document.getElementById(s).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  document.body.classList.add("no-scroll");
+}
+
+function closeSheet(id) {
+  document.getElementById(id).classList.add("hidden");
+  const anyOpen = SHEETS.some(s => !document.getElementById(s).classList.contains("hidden"));
+  if (!anyOpen) document.body.classList.remove("no-scroll");
+}
+
+// Qora fonni bosganda oynani yopish
+SHEETS.forEach(id => {
+  document.getElementById(id).addEventListener("click", (e) => {
+    if (e.target.id === id && id !== "successSheet") closeSheet(id);
+  });
+});
 
 async function apiGet(path) {
   const res = await fetch(`${API_URL}${path}`);
@@ -38,7 +64,13 @@ async function apiPost(path, body) {
     body: JSON.stringify(body),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || "Xatolik yuz berdi");
+  if (!res.ok) {
+    // FastAPI validatsiya xatosi ro'yxat ko'rinishida kelishi mumkin
+    if (Array.isArray(data.detail)) {
+      throw new Error(data.detail.map(d => d.msg.replace("Value error, ", "")).join(". "));
+    }
+    throw new Error(data.detail || "Xatolik yuz berdi");
+  }
   return data;
 }
 
@@ -47,7 +79,7 @@ async function loadCategories() {
   categories = await apiGet("/storefront/categories");
   const chips = document.getElementById("categoryChips");
   chips.innerHTML = `<div class="chip active" data-id="">Hammasi</div>` +
-    categories.map(c => `<div class="chip" data-id="${c.id}">${c.name}</div>`).join("");
+    categories.map(c => `<div class="chip" data-id="${c.id}">${esc(c.name)}</div>`).join("");
 
   chips.querySelectorAll(".chip").forEach(chip => {
     chip.addEventListener("click", () => {
@@ -81,9 +113,9 @@ function renderProducts() {
   grid.innerHTML = products.map(p => `
     <div class="card" onclick="openProduct(${p.id})">
       ${p.image_url
-        ? `<img src="${p.image_url}" class="product-image" alt="${p.name}">`
-        : `<div class="product-image-placeholder">Rasm yo'q</div>`}
-      <div class="name">${p.name}</div>
+        ? `<img src="${esc(p.image_url)}" class="card-image" alt="${esc(p.name)}" loading="lazy">`
+        : `<div class="card-image-placeholder">Rasm yo'q</div>`}
+      <div class="name">${esc(p.name)}</div>
       <div class="price">${money(p.price)}</div>
       ${stockBadge(p)}
     </div>
@@ -93,17 +125,21 @@ function renderProducts() {
 // ==== MAHSULOT TAFSILOTI ====
 function openProduct(id) {
   activeProduct = products.find(p => p.id === id);
+  if (!activeProduct) return;
   selectedVariant = null;
   qty = 1;
 
-  document.getElementById("pTitle").textContent = activeProduct.name;
-  const imgEl = document.getElementById("pImage");
+  const img = document.getElementById("pImage");
   if (activeProduct.image_url) {
-    imgEl.src = activeProduct.image_url;
-    imgEl.style.display = "block";
+    img.src = activeProduct.image_url;
+    img.alt = activeProduct.name;
+    img.classList.remove("hidden");
   } else {
-    imgEl.style.display = "none";
+    img.removeAttribute("src");
+    img.classList.add("hidden");
   }
+
+  document.getElementById("pTitle").textContent = activeProduct.name;
   document.getElementById("pDesc").textContent = activeProduct.description || "";
   document.getElementById("pPrice").textContent = money(activeProduct.price);
   document.getElementById("qtyValue").textContent = qty;
@@ -111,7 +147,7 @@ function openProduct(id) {
   const optionsBox = document.getElementById("variantOptions");
   optionsBox.innerHTML = activeProduct.variants.map(v => `
     <div class="variant-opt ${v.stock === 0 ? "disabled" : ""}" data-id="${v.id}">
-      ${v.size} / ${v.color}
+      ${esc(v.size)} / ${esc(v.color)}
     </div>
   `).join("");
 
@@ -130,7 +166,6 @@ function changeQty(delta) {
   qty = Math.max(1, qty + delta);
   document.getElementById("qtyValue").textContent = qty;
 }
-
 
 function addToCart() {
   if (!selectedVariant) {
@@ -174,8 +209,8 @@ function renderCart() {
     box.innerHTML = cart.map((item, idx) => `
       <div class="cart-item">
         <div>
-          <div class="name">${item.product_name}</div>
-          <div class="meta">${item.size} / ${item.color} × ${item.quantity}</div>
+          <div class="name">${esc(item.product_name)}</div>
+          <div class="meta">${esc(item.size)} / ${esc(item.color)} × ${item.quantity}</div>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
           <span>${money(item.price * item.quantity)}</span>
@@ -201,44 +236,44 @@ function openCheckout() {
     document.getElementById("cFullName").value =
       `${tgUser.first_name || ""} ${tgUser.last_name || ""}`.trim();
   }
-  closeSheet("cartSheet");
   openSheet("checkoutSheet");
 }
 
-async function confirmOrder() {
+function showCheckoutError(message) {
   const errorBox = document.getElementById("checkoutError");
-  errorBox.classList.add("hidden");
+  errorBox.textContent = message;
+  errorBox.classList.remove("hidden");
+}
+
+async function confirmOrder() {
+  document.getElementById("checkoutError").classList.add("hidden");
 
   const fullName = document.getElementById("cFullName").value.trim();
   const phone = document.getElementById("cPhone").value.trim();
   const address = document.getElementById("cAddress").value.trim();
 
-    if (!fullName || !phone || !address) {
-    errorBox.textContent = "Barcha maydonlarni to'ldiring";
-    errorBox.classList.remove("hidden");
+  if (!fullName || !phone || !address) {
+    showCheckoutError("Barcha maydonlarni to'ldiring");
     return;
   }
 
-  // Ism faqat harf, bo'shliq va chiziqchadan iborat bo'lishi kerak
-  const namePattern = /^[A-Za-zА-Яа-яЎўҚқҒғҲҳ\s'-]+$/;
+  // Ism: faqat harf, bo'shliq, ' va - belgilari
+  const namePattern = /^[A-Za-zА-Яа-яЁёЎўҚқҒғҲҳ\s'’-]+$/;
   if (!namePattern.test(fullName) || fullName.length < 3) {
-    errorBox.textContent = "Ism noto'g'ri kiritildi. Faqat harflardan foydalaning";
-    errorBox.classList.remove("hidden");
+    showCheckoutError("Ism noto'g'ri kiritildi. Faqat harflardan foydalaning");
     return;
   }
 
-  // Telefon: faqal raqam, +, bo'shliq va chiziqcha, kamida 9 ta raqam
+  // Telefon: 9-13 ta raqam
   const digitsOnly = phone.replace(/\D/g, "");
   if (digitsOnly.length < 9 || digitsOnly.length > 13) {
-    errorBox.textContent = "Telefon raqam noto'g'ri. Masalan: +998901234567";
-    errorBox.classList.remove("hidden");
+    showCheckoutError("Telefon raqam noto'g'ri. Masalan: +998901234567");
     return;
   }
 
-  // Manzil: faqat raqamlardan iborat bo'lmasligi kerak
-  if (/^\d+$/.test(address.trim())) {
-    errorBox.textContent = "Manzilni to'liq kiriting (ko'cha, uy raqami)";
-    errorBox.classList.remove("hidden");
+  // Manzil: faqat raqamdan iborat bo'lmasligi kerak
+  if (/^\d+$/.test(address)) {
+    showCheckoutError("Manzilni to'liq kiriting (ko'cha, uy raqami)");
     return;
   }
 
@@ -262,11 +297,9 @@ async function confirmOrder() {
 
     cart = [];
     updateCartCount();
-    closeSheet("checkoutSheet");
     openSheet("successSheet");
   } catch (err) {
-    errorBox.textContent = err.message;
-    errorBox.classList.remove("hidden");
+    showCheckoutError(err.message);
   } finally {
     btn.disabled = false;
     btn.textContent = "Buyurtmani tasdiqlash";

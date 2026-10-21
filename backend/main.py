@@ -78,6 +78,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def no_cache_for_webapp(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/app"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
 app.include_router(auth.router)
 app.include_router(categories.router)
 app.include_router(brands.router)
