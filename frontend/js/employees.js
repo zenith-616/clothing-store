@@ -4,6 +4,29 @@ if (!getToken()) {
 
 let currentEmployees = [];
 
+// ----- Kuchli parol qoidalari (backend'dagi qoidalar bilan bir xil) -----
+const PASSWORD_RULES = {
+  len: (p) => p.length >= 8,            // kamida 8 ta belgi
+  digit: (p) => /[0-9]/.test(p),        // kamida 1 ta raqam
+  upper: (p) => /\p{Lu}/u.test(p),      // kamida 1 ta katta harf
+};
+
+function passwordIsStrong(password) {
+  return Object.values(PASSWORD_RULES).every((rule) => rule(password));
+}
+
+// Parol yozilayotganda har bir talab yonida belgi (✓ / ✗) ko'rsatiladi
+function updatePasswordRules() {
+  const password = document.getElementById("ePassword").value;
+  document.querySelectorAll("#pwRules li").forEach((li) => {
+    const ok = PASSWORD_RULES[li.dataset.rule](password);
+    li.classList.toggle("ok", ok);
+    li.classList.toggle("bad", !ok && password.length > 0);
+  });
+}
+
+document.getElementById("ePassword").addEventListener("input", updatePasswordRules);
+
 function roleBadge(role) {
   if (role === "admin") {
     return `<span class="status status-active"><span class="dot"></span>Admin</span>`;
@@ -57,6 +80,7 @@ function openEmployeeModal(employee = null) {
   document.getElementById("ePassword").value = "";
   document.getElementById("eRole").value = employee ? employee.role : "operator";
   document.getElementById("eActive").checked = employee ? employee.is_active : true;
+  updatePasswordRules();
 
   // Tahrirlashda email/parol o'zgartirilmaydi, faqat yangi qo'shishda
   document.getElementById("emailField").classList.toggle("d-none", !!employee);
@@ -67,18 +91,39 @@ function openEmployeeModal(employee = null) {
   modal.show();
 }
 
-document.getElementById("saveEmployeeBtn").addEventListener("click", async () => {
+function showModalError(message) {
   const errorBox = document.getElementById("employeeModalError");
-  errorBox.classList.add("d-none");
+  errorBox.textContent = message;
+  errorBox.classList.remove("d-none");
+}
+
+document.getElementById("saveEmployeeBtn").addEventListener("click", async () => {
+  document.getElementById("employeeModalError").classList.add("d-none");
 
   const employeeId = document.getElementById("employeeId").value;
   const fullName = document.getElementById("eFullName").value.trim();
   const role = document.getElementById("eRole").value;
 
   if (!fullName) {
-    errorBox.textContent = "Ismni kiriting";
-    errorBox.classList.remove("d-none");
+    showModalError("Ismni kiriting");
     return;
+  }
+
+  // Yangi xodim uchun email va kuchli parol tekshiriladi
+  let email = "";
+  let password = "";
+  if (!employeeId) {
+    email = document.getElementById("eEmail").value.trim();
+    password = document.getElementById("ePassword").value;
+
+    if (!email || !password) {
+      showModalError("Email va parolni kiriting");
+      return;
+    }
+    if (!passwordIsStrong(password)) {
+      showModalError("Parol talablarga javob bermaydi: kamida 8 ta belgi, 1 ta raqam va 1 ta katta harf bo'lishi kerak");
+      return;
+    }
   }
 
   const btn = document.getElementById("saveEmployeeBtn");
@@ -96,15 +141,6 @@ document.getElementById("saveEmployeeBtn").addEventListener("click", async () =>
         }),
       });
     } else {
-      const email = document.getElementById("eEmail").value.trim();
-      const password = document.getElementById("ePassword").value;
-      if (!email || !password) {
-        errorBox.textContent = "Email va parolni kiriting";
-        errorBox.classList.remove("d-none");
-        btn.disabled = false;
-        btn.textContent = "Saqlash";
-        return;
-      }
       await apiFetch("/users/", {
         method: "POST",
         body: JSON.stringify({ full_name: fullName, email, password, role }),
@@ -113,8 +149,7 @@ document.getElementById("saveEmployeeBtn").addEventListener("click", async () =>
     bootstrap.Modal.getInstance(document.getElementById("employeeModal")).hide();
     loadEmployees();
   } catch (err) {
-    errorBox.textContent = err.message;
-    errorBox.classList.remove("d-none");
+    showModalError(err.message);
   } finally {
     btn.disabled = false;
     btn.textContent = "Saqlash";

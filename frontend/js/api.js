@@ -9,6 +9,18 @@ function logout() {
   window.location.href = "index.html";
 }
 
+// Server xatosini o'qiladigan matnga aylantirish
+// (FastAPI validatsiya xatosi ro'yxat ko'rinishida keladi)
+function errorMessage(data, fallback) {
+  const detail = data && data.detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map(d => String(d.msg || "").replace("Value error, ", ""))
+      .join(". ") || fallback;
+  }
+  return detail || fallback;
+}
+
 async function login(email, password) {
   // backend OAuth2 formasini kutadi (JSON emas)
   const body = new URLSearchParams();
@@ -23,7 +35,7 @@ async function login(email, password) {
 
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.detail || "Kirishda xatolik");
+    throw new Error(errorMessage(data, "Kirishda xatolik"));
   }
   localStorage.setItem("token", data.access_token);
 }
@@ -43,6 +55,6 @@ async function apiFetch(path, options = {}) {
   if (res.status === 204) return null;
 
   const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || "Xatolik yuz berdi");
+  if (!res.ok) throw new Error(errorMessage(data, "Xatolik yuz berdi"));
   return data;
 }

@@ -71,7 +71,12 @@
           </div>
           <div class="mb-3" id="passwordField">
             <label class="form-label">Parol</label>
-            <input type="password" class="form-control" id="ePassword">
+            <input type="password" class="form-control" id="ePassword" autocomplete="new-password">
+            <ul class="pw-rules" id="pwRules">
+              <li data-rule="len">Kamida 8 ta belgi</li>
+              <li data-rule="digit">Kamida 1 ta raqam</li>
+              <li data-rule="upper">Kamida 1 ta katta harf</li>
+            </ul>
           </div>
           <div class="mb-3">
             <label class="form-label">Rol</label>

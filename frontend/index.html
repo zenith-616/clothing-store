@@ -22,17 +22,19 @@
         <p class="sub">Davom etish uchun tizimga kiring</p>
 
         <div id="error" class="alert alert-danger d-none"></div>
+        <div id="lockBox" class="alert alert-warning d-none"></div>
 
         <form id="loginForm">
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" required>
+            <input type="email" class="form-control" id="email" autocomplete="username" required>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Parol</label>
-            <input type="password" class="form-control" id="password" required>
+            <input type="password" class="form-control" id="password" autocomplete="current-password" required>
           </div>
           <button type="submit" class="btn btn-ink w-100" id="loginBtn">Kirish</button>
+          <div id="attempts" class="attempts"></div>
         </form>
       </div>
     </div>
@@ -40,12 +42,66 @@
 
   <script src="js/api.js"></script>
   <script>
+    // ----- Urinishlarni cheklash: 3 marta xato -> 30 soniya blok -----
+    const MAX_ATTEMPTS = 3;
+    const LOCK_SECONDS = 30;
+    const GUARD_KEY = "loginGuard";
+
     const form = document.getElementById("loginForm");
     const errorBox = document.getElementById("error");
+    const lockBox = document.getElementById("lockBox");
+    const attemptsEl = document.getElementById("attempts");
     const btn = document.getElementById("loginBtn");
+
+    let timer = null;
+
+    // Holat localStorage'da saqlanadi, shuning uchun sahifani yangilash blokni olib tashlamaydi
+    function readGuard() {
+      try {
+        const g = JSON.parse(localStorage.getItem(GUARD_KEY));
+        return { fails: (g && g.fails) || 0, lockUntil: (g && g.lockUntil) || 0 };
+      } catch (e) {
+        return { fails: 0, lockUntil: 0 };
+      }
+    }
+
+    function saveGuard(g) {
+      localStorage.setItem(GUARD_KEY, JSON.stringify(g));
+    }
+
+    function secondsLeft() {
+      return Math.ceil((readGuard().lockUntil - Date.now()) / 1000);
+    }
+
+    function renderGuard() {
+      const left = secondsLeft();
+
+      if (left > 0) {
+        btn.disabled = true;
+        btn.textContent = `Bloklangan (${left} s)`;
+        lockBox.textContent =
+          `Parol ${MAX_ATTEMPTS} marta noto'g'ri kiritildi. ${left} soniyadan keyin qayta urinib ko'ring.`;
+        lockBox.classList.remove("d-none");
+        attemptsEl.textContent = `Noto'g'ri urinishlar: ${MAX_ATTEMPTS}/${MAX_ATTEMPTS}`;
+        if (!timer) timer = setInterval(renderGuard, 1000);
+        return;
+      }
+
+      // Blok tugadi (yoki umuman bo'lmagan)
+      if (timer) { clearInterval(timer); timer = null; }
+      if (readGuard().lockUntil) saveGuard({ fails: 0, lockUntil: 0 });
+
+      btn.disabled = false;
+      btn.textContent = "Kirish";
+      lockBox.classList.add("d-none");
+      const fails = readGuard().fails;
+      attemptsEl.textContent = fails > 0 ? `Noto'g'ri urinishlar: ${fails}/${MAX_ATTEMPTS}` : "";
+    }
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      if (secondsLeft() > 0) return; // bloklangan paytda yuborilmaydi
+
       errorBox.classList.add("d-none");
       btn.disabled = true;
       btn.textContent = "Kutilmoqda...";
@@ -55,15 +111,28 @@
           document.getElementById("email").value,
           document.getElementById("password").value
         );
+        localStorage.removeItem(GUARD_KEY);
         window.location.href = "dashboard.html";
+        return;
       } catch (err) {
-        errorBox.textContent = err.message;
+        const networkError = err instanceof TypeError; // server bilan aloqa yo'q
+        errorBox.textContent = networkError
+          ? "Serverga ulanib bo'lmadi. Bir ozdan keyin qayta urinib ko'ring (server uyg'onayotgan bo'lishi mumkin)."
+          : err.message;
         errorBox.classList.remove("d-none");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Kirish";
+
+        // Faqat haqiqiy noto'g'ri login/parol urinishlari hisoblanadi
+        if (!networkError) {
+          const g = readGuard();
+          g.fails += 1;
+          if (g.fails >= MAX_ATTEMPTS) g.lockUntil = Date.now() + LOCK_SECONDS * 1000;
+          saveGuard(g);
+        }
       }
+      renderGuard();
     });
+
+    renderGuard(); // sahifa ochilganda joriy holatni ko'rsatish
   </script>
 </body>
 </html>
