@@ -1,4 +1,5 @@
-from pydantic import BaseModel, ConfigDict, Field
+import re
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime
 
 class CategoryCreate(BaseModel):
@@ -165,8 +166,19 @@ class DailyRevenue(BaseModel):
 class UserCreate(BaseModel):
     full_name: str = Field(min_length=1, max_length=100)
     email: str = Field(min_length=5, max_length=120)
-    password: str = Field(min_length=6, max_length=100)
+    password: str = Field(max_length=100)
     role: str = Field(default="operator")
+
+    @field_validator("password")
+    @classmethod
+    def strong_password(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Parol kamida 8 ta belgidan iborat bo'lishi kerak")
+        if not re.search(r"[0-9]", v):
+            raise ValueError("Parolda kamida 1 ta raqam bo'lishi kerak")
+        if not any(ch.isupper() for ch in v):
+            raise ValueError("Parolda kamida 1 ta katta harf bo'lishi kerak")
+        return v
 
 
 class UserUpdate(BaseModel):

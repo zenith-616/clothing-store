@@ -494,3 +494,39 @@ body {
   color: var(--steel);
   font-size: 0.7rem;
 }
+
+/* ---------- LOGIN URINISHLARI VA PAROL TALABLARI ---------- */
+
+.attempts {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--steel);
+  min-height: 1.2em;
+}
+
+.btn-ink:disabled {
+  background: #8B8578;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.pw-rules {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  font-size: 0.82rem;
+}
+
+.pw-rules li {
+  color: var(--steel);
+  padding-left: 20px;
+  position: relative;
+  margin-bottom: 2px;
+}
+
+.pw-rules li::before { content: "○"; position: absolute; left: 0; }
+.pw-rules li.ok { color: var(--forest); }
+.pw-rules li.ok::before { content: "✓"; }
+.pw-rules li.bad { color: var(--rust); }
+.pw-rules li.bad::before { content: "✗"; }
